@@ -1,0 +1,15 @@
+# Core pipeline
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.4
+scipy>=1.11
+shapely>=2.0
+pyproj>=3.6
+networkx>=3.2
+folium>=0.16
+matplotlib>=3.8
+optuna>=3.5
+# Deployment
+fastapi>=0.110
+uvicorn[standard]>=0.27
+streamlit>=1.32

@@ -1,0 +1,37 @@
+# Agent instructions and working metadata (keep the agreed project plan/readme)
+AGENTS.md
+.agents/
+.codex/
+.claude/
+agents/
+agent/
+!PLAN.md
+!README.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Local data, generated outputs, and model artifacts
+Datasets/
+datasets/
+data/
+artifacts/
+*.joblib
+*.pkl
+*.pt
+*.pth
+
+# Local environment and editor files
+.env
+.env.*
+.idea/
+.vscode/
+.DS_Store
