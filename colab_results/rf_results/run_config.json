@@ -1,0 +1,35 @@
+{
+  "model": "RandomForestClassifier",
+  "features": [
+    "distance_m",
+    "distance_gap_m",
+    "heading_cos",
+    "gps_speed_mps",
+    "candidate_rank"
+  ],
+  "target": "is_match",
+  "group_column": "trip_id",
+  "random_state": 42,
+  "model_parameters": {
+    "n_estimators": 40,
+    "max_depth": 14,
+    "min_samples_split": 10,
+    "min_samples_leaf": 20,
+    "max_features": "sqrt",
+    "class_weight": "balanced_subsample",
+    "max_samples": 0.2,
+    "bootstrap": true,
+    "n_jobs": -1
+  },
+  "cv_method": "precomputed five-fold trip-grouped assignment manifest",
+  "training_trips": 80,
+  "student_test_trips": 10,
+  "training_candidate_rows": 1369843,
+  "student_test_candidate_rows": 130963,
+  "python_version": "3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]",
+  "numpy_version": "2.4.6",
+  "pandas_version": "2.2.3",
+  "scikit_learn_version": "1.6.1",
+  "final_fit_seconds": 59.76352620124817,
+  "inference_seconds": 0.3949108123779297
+}
