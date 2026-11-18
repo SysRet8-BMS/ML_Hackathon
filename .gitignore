@@ -23,6 +23,8 @@ build/
 Datasets/
 datasets/
 data/
+colab_results/
+colab_results-*.zip
 artifacts/
 *.joblib
 *.pkl

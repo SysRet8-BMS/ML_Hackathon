@@ -41,9 +41,10 @@ route is a reference with documented limitations, not assumed perfect truth.
 - `partition_summary.csv`: aggregate counts.
 - `data_processing/eda.py`: standard-library parser and summary generator.
 
-Static plots and Folium maps are not included yet. Matplotlib is installed, but
-Folium and the modeling/geospatial packages were unavailable; package download
-was attempted and failed because the environment cannot resolve the package
-index. Use `python data_processing/eda.py --plot-limit 0` to refresh tables
-without plotting. A default run attempts one static preview per partition when
-Matplotlib is available.
+Static GPS/network preview plots have since been generated for one training trip
+and one student-test trip: `train_00000001_preview.png` and
+`student_test_00000000_preview.png`. They are previews, not map-matched results.
+An interactive Folium map is still pending because Folium is unavailable and the
+package index could not be reached. Use `python data_processing/eda.py
+--plot-limit 0` to refresh the tables without plotting; the default run attempts
+one static preview per permitted partition when Matplotlib is available.

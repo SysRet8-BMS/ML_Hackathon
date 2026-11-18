@@ -30,14 +30,14 @@ This plan follows `AGENTS.md` and the five supporting PDFs in `Docs/`. The requi
 
 ### 3. Candidate generation and features
 
-- Build a spatially indexed road-segment candidate generator. Select K/radius using training-only grouped validation and report candidate miss rate and runtime; use student-testing only for development comparison.
-- Construct candidate-level labels only after defining a defensible chronological alignment rule. Record cases where alignment is uncertain.
+- Build a spatially indexed road-segment candidate generator. The current MLP raw-data path implements a grid-based nearest-arc search (initial K=8, radius=100 m with fallback) and reports candidate misses; validate and tune K/radius using training-only grouped validation, then student-testing for development comparison.
+- Construct candidate-level labels with the current explicit working rule: nearest supplied route arc under non-decreasing route order. Inspect and document its assumptions/limitations before treating results as authoritative; record candidate misses and alignment uncertainty.
 - Engineer spatial, heading/kinematic, and candidate-context features (distances in metres, projection position, arc geometry, bearing agreement, GPS speed/time gaps, candidate rank/count, and useful graph context). Avoid target leakage and fit preprocessing within CV folds.
 - Ensure inference-time feature generation uses only GPS/network inputs and does not require reference routes.
 
 ### 4. Five-model experiment and phase-one presentation
 
-The four assigned models are MLP (Member 1), XGBoost (Member 2), Random Forest (Member 3), and Logistic Regression (Member 4). The team will choose and assign a fifth model later; it must be a distinct algorithm, trained and evaluated under the same protocol. No specific fifth algorithm is committed yet.
+The four assigned models are MLP and KNN (Member 1), XGBoost (Member 2), Random Forest (Member 3), and Logistic Regression (Member 4). This gives five distinct models; KNN is Member 1's fifth-model contribution. If the team wants an additional sixth model, assign it separately.
 
 For each model, retain the actual configuration, grouped-CV and student-test outputs, confusion matrix, metrics, timing, and model-specific report answers. Member 1's MLP implementation must retain actual epoch-level training/validation loss rather than synthetic curves.
 
@@ -78,7 +78,7 @@ For each model, retain the actual configuration, grouped-CV and student-test out
 | Member 2 | XGBoost | Own XGBoost training/evaluation; use the shared candidate features, CV splits, metrics, and artifact interface. |
 | Member 3 | Random Forest | Own Random Forest training/evaluation; review route continuity and probability output compatibility. |
 | Member 4 | Logistic Regression | Own Logistic Regression training/evaluation and shared experiment/report integration. |
-| Fifth model | To be assigned by the team | Select a distinct model later; use the same split and evaluation contract. |
+| Member 1 (you) | KNN (additional model) | Own distance-weighted KNN training/evaluation under the shared split and metrics contract. |
 
 Cross-cutting tasks (EDA, candidate generation/features, HMM, API/UI, and report integration) should be explicitly coordinated among members; this change assigns model ownership only and does not silently transfer those responsibilities.
 
@@ -88,7 +88,7 @@ All members should review the whole pipeline and practice explaining it for the 
 
 1. **Input gate:** dataset partitions/files verified and evaluator data access boundary established.
 2. **Phase-one presentation:** EDA and map, documented alignment, candidate/features baseline, and available real baseline comparisons shown with honest status.
-3. **Model gate:** the four assigned models plus one later-selected model are trained; common evaluation is logged and the final family is justified.
+3. **Model gate:** the five models (MLP, KNN, XGBoost, Random Forest, Logistic Regression) are trained; common evaluation is logged and the final family is justified.
 4. **Tuning/decoder gate:** HPO retained; HMM ablation and edge cases evaluated on student-testing data.
 5. **Integration gate:** student-test end-to-end pass; evaluator trip execution check does not feed scores back into development.
 6. **Submission gate:** public repository and single PDF are complete, reproducible, scrubbed, and demonstrably consistent with the live system.

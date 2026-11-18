@@ -10,15 +10,22 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 import time
 from collections import Counter
 from pathlib import Path
 
 import numpy as np
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+try:
+    from data_processing.candidate_features import load_partition
+except ModuleNotFoundError:  # Colab can upload the three modules flat at its root.
+    from candidate_features import load_partition
 
 
 ID_COLUMNS = {"trip_id", "observation_id", "arc_id"}
 LABEL_COLUMN = "is_match"
+DEFAULT_FEATURES = ("distance_m", "distance_gap_m", "heading_cos", "gps_speed_mps", "candidate_rank")
 
 
 class BinaryMLP:
@@ -100,7 +107,7 @@ class BinaryMLP:
         return np.column_stack((1-p, p))
 
 
-def load_csv(path: Path):
+def load_csv(path: Path, selected_features=DEFAULT_FEATURES):
     with path.open(newline="") as f:
         rows = list(csv.DictReader(f))
     if not rows:
@@ -109,7 +116,10 @@ def load_csv(path: Path):
     required = {"trip_id", "observation_id", LABEL_COLUMN}
     if not required <= set(fields):
         raise ValueError(f"Input must contain {sorted(required)}")
-    features = [c for c in fields if c not in ID_COLUMNS | {LABEL_COLUMN}]
+    available = [c for c in fields if c not in ID_COLUMNS | {LABEL_COLUMN}]
+    features = list(selected_features) if selected_features else available
+    missing = sorted(set(features)-set(available))
+    if missing: raise ValueError(f"Requested feature columns missing from {path}: {missing}")
     if not features:
         raise ValueError("No numeric feature columns found")
     x = np.asarray([[float(r[c]) for c in features] for r in rows], dtype=float)
@@ -117,6 +127,19 @@ def load_csv(path: Path):
     if not np.isfinite(x).all() or not set(np.unique(y)) <= {0, 1}:
         raise ValueError("Features must be finite and labels must be binary")
     return rows, features, x, y
+
+
+def load_raw(root: Path, selected_features=DEFAULT_FEATURES):
+    rows, summaries = load_partition(root)
+    if not rows:
+        raise ValueError(f"No candidate rows generated under {root}")
+    available = [k for k in rows[0] if k not in ID_COLUMNS | {LABEL_COLUMN}]
+    features = list(selected_features) if selected_features else available
+    missing = sorted(set(features)-set(available))
+    if missing: raise ValueError(f"Requested feature columns missing from raw pipeline: {missing}")
+    x = np.asarray([[float(r[c]) for c in features] for r in rows], dtype=float)
+    y = np.asarray([int(r[LABEL_COLUMN]) for r in rows], dtype=int)
+    return rows, features, x, y, summaries
 
 
 def group_folds(groups, n_splits=5):
@@ -161,21 +184,34 @@ def scores(y, p, rows):
 
 def main():
     ap=argparse.ArgumentParser()
-    ap.add_argument("--train",type=Path,required=True,help="Candidate feature CSV from training trips only")
-    ap.add_argument("--student-test",type=Path,required=True,help="Candidate feature CSV from student-test trips")
+    source=ap.add_mutually_exclusive_group(required=True)
+    source.add_argument("--train-root",type=Path,help="Raw training partition directory, e.g. datasets/train")
+    source.add_argument("--train",type=Path,help="Prebuilt candidate feature CSV (optional workflow)")
+    ap.add_argument("--student-root",type=Path,help="Raw student-test partition directory")
+    ap.add_argument("--student-test",type=Path,help="Prebuilt student-test candidate feature CSV")
     ap.add_argument("--out",type=Path,default=Path("results/mlp"))
     ap.add_argument("--folds",type=int,default=5)
-    ap.add_argument("--epochs",type=int,default=40)
+    ap.add_argument("--epochs",type=int,default=15)
     ap.add_argument("--seed",type=int,default=17)
     ap.add_argument("--hidden",type=int,default=32)
+    ap.add_argument("--batch-size",type=int,default=8192)
+    ap.add_argument("--features",default=','.join(DEFAULT_FEATURES),help='Comma-separated feature columns; default uses five compact features')
     args=ap.parse_args(); args.out.mkdir(parents=True,exist_ok=True)
-    tr_rows,features,x,y=load_csv(args.train)
-    st_rows,st_features,sx,sy=load_csv(args.student_test)
+    feature_columns=[c.strip() for c in args.features.split(',') if c.strip()] if args.features else None
+    if args.train_root:
+        if not args.student_root: ap.error("--student-root is required with --train-root")
+        tr_rows,features,x,y,train_summaries=load_raw(args.train_root,feature_columns)
+        st_rows,st_features,sx,sy,student_summaries=load_raw(args.student_root,feature_columns)
+    else:
+        if not args.student_test: ap.error("--student-test is required with --train")
+        tr_rows,features,x,y=load_csv(args.train,feature_columns)
+        st_rows,st_features,sx,sy=load_csv(args.student_test,feature_columns)
+        train_summaries=student_summaries=None
     if features != st_features: raise ValueError("Train/student feature columns must match")
     groups=[r["trip_id"] for r in tr_rows]
     cv=[]; histories=[]
     for fold,(ti,vi) in enumerate(group_folds(groups,args.folds),1):
-        model=BinaryMLP(hidden=args.hidden,epochs=args.epochs,seed=args.seed+fold)
+        model=BinaryMLP(hidden=args.hidden,epochs=args.epochs,batch_size=args.batch_size,seed=args.seed+fold)
         start=time.perf_counter()
         model.fit(x[ti],y[ti],validation=(x[vi],y[vi]))
         elapsed=time.perf_counter()-start
@@ -184,16 +220,26 @@ def main():
                    "train_seconds":elapsed,**scores(y[vi],p,[tr_rows[i] for i in vi])})
         for epoch,(tl,vl) in enumerate(zip(model.history["train_loss"],model.history["validation_loss"]),1):
             histories.append({"fold":fold,"epoch":epoch,"train_loss":tl,"validation_loss":vl})
-    final=BinaryMLP(hidden=args.hidden,epochs=args.epochs,seed=args.seed)
+    final=BinaryMLP(hidden=args.hidden,epochs=args.epochs,batch_size=args.batch_size,seed=args.seed)
     start=time.perf_counter(); final.fit(x,y); fit_seconds=time.perf_counter()-start
     start=time.perf_counter(); student_p=final.predict_proba(sx)[:,1]; inference_seconds=time.perf_counter()-start
     result={"model":"one_hidden_layer_binary_mlp","features":features,
             "config":{"hidden":args.hidden,"learning_rate":0.01,"l2":1e-4,"epochs":args.epochs,
-                      "batch_size":512,"seed":args.seed,"loss":"binary cross entropy","optimizer":"mini-batch SGD"},
+                      "batch_size":args.batch_size,"seed":args.seed,"loss":"binary cross entropy","optimizer":"mini-batch SGD"},
             "cv_folds":cv,"cv_macro_f1_mean":float(np.mean([c["candidate_macro_f1"] for c in cv])),
             "cv_macro_f1_std":float(np.std([c["candidate_macro_f1"] for c in cv])),
             "student_test":scores(sy,student_p,st_rows),"fit_seconds_full_train":fit_seconds,
             "student_inference_seconds":inference_seconds}
+    if train_summaries is not None:
+        total_observations=sum(s["observations"] for s in train_summaries)
+        total_misses=sum(s["candidate_misses"] for s in train_summaries)
+        student_observations=sum(s["observations"] for s in student_summaries)
+        student_misses=sum(s["candidate_misses"] for s in student_summaries)
+        result["candidate_generation"]={"train":train_summaries,"student_test":student_summaries,
+            "label_rule":"nearest supplied route arc under a non-decreasing route-index constraint",
+            "candidate_k":8,"initial_radius_m":100,"max_radius_m":800,
+            "train_candidate_miss_rate":total_misses/max(total_observations,1),
+            "student_test_candidate_miss_rate":student_misses/max(student_observations,1)}
     (args.out/"metrics.json").write_text(json.dumps(result,indent=2)+"\n")
     for name,records in (("fold_metrics.csv",cv),("loss_history.csv",histories)):
         if records:
