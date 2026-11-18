@@ -1,0 +1,16 @@
+{
+  "train": {
+    "trips": 80,
+    "observations": 208417,
+    "candidate_misses": 47971,
+    "candidate_miss_rate": 0.23016836438486304,
+    "csv": "/content/drive/MyDrive/colab_results/features/train_candidates.csv"
+  },
+  "student_test": {
+    "trips": 10,
+    "observations": 19160,
+    "candidate_misses": 4947,
+    "candidate_miss_rate": 0.25819415448851774,
+    "csv": "/content/drive/MyDrive/colab_results/features/student_test_candidates.csv"
+  }
+}
