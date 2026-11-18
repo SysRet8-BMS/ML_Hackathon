@@ -33,7 +33,7 @@ artifacts/
 *.pkl
 *.pt
 *.pth
-
+Student folder
 # Local environment and editor files
 .env
 .env.*

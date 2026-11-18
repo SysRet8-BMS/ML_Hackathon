@@ -1,0 +1,3 @@
+partition,trip_count,track_rows_sum,valid_gps_rows_sum,invalid_gps_rows_sum,nodes_sum,arcs_sum,route_arcs_sum,invalid_route_arc_ids_sum,route_directed_discontinuities_sum,timestamp_nonincreasing_steps_sum,timestamp_gap_gt_1s_sum,graph_components_including_isolates_sum,isolated_nodes_sum,invalid_arc_node_references_sum
+train,80,208417.0,208417.0,0.0,1933485.0,3876904.0,31336.0,0.0,13.0,0.0,7286.0,3121.0,0.0,0.0
+student_test,10,19160.0,19160.0,0.0,90689.0,185041.0,3477.0,0.0,1.0,0.0,264.0,227.0,0.0,0.0
