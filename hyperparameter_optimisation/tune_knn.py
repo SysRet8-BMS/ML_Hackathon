@@ -18,8 +18,8 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from models.mlp import DEFAULT_FEATURES, group_folds
-from models.logistic_regression import metrics
+from model_training.mlp import DEFAULT_FEATURES, group_folds
+from model_training.logistic_regression import metrics
 
 
 def main():

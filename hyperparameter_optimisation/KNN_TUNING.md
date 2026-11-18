@@ -7,7 +7,7 @@ Forest results must still join the required five-model comparison.
 Run from the repository root:
 
 ```sh
-.venv/bin/python models/tune_knn.py --trials 10
+.venv/bin/python hyperparameter_optimisation/tune_knn.py --trials 10
 ```
 
 Optuna TPE maximizes mean candidate macro F1 across five whole-trip folds on
@@ -36,7 +36,7 @@ Route continuity and HMM performance are outside this classifier experiment.
 After completion, generate the comparison table, report section and SVG plots:
 
 ```sh
-.venv/bin/python models/summarize_knn_tuning.py
+.venv/bin/python hyperparameter_optimisation/summarize_knn_tuning.py
 ```
 
 This run uses scikit-learn log_loss for both baseline and tuned models. The

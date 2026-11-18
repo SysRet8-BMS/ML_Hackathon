@@ -1,0 +1,84 @@
+DATASET SUMMARY
+--------------------------
+Rows: 1369843
+Training trips: 80
+Positive candidates: 160446
+Negative candidates: 1209397
+Positive class weight: 7.538
+Observations with no positive: 47971
+Observations with positive: 160446
+
+STARTING GROUP K-FOLD CROSS VALIDATION
+
+FOLD 1/5
+Candidate accuracy: 0.8772
+Precision: 0.5026
+Recall: 0.9007
+F1: 0.6452
+Log loss: 0.3108
+Top-1 accuracy (all observations): 0.6345
+Candidate coverage: 0.8012
+Training time: 11.02 seconds
+
+FOLD 2/5
+Candidate accuracy: 0.8483
+Precision: 0.3642
+Recall: 0.8156
+F1: 0.5035
+Log loss: 0.318
+Top-1 accuracy (all observations): 0.4103
+Candidate coverage: 0.5513
+Training time: 12.31 seconds
+
+FOLD 3/5
+Candidate accuracy: 0.8741
+Precision: 0.5456
+Recall: 0.9112
+F1: 0.6825
+Log loss: 0.2978
+Top-1 accuracy (all observations): 0.7141
+Candidate coverage: 0.9159
+Training time: 12.66 seconds
+
+FOLD 4/5
+Candidate accuracy: 0.8982
+Precision: 0.5274
+Recall: 0.9117
+F1: 0.6683
+Log loss: 0.2585
+Top-1 accuracy (all observations): 0.7047
+Candidate coverage: 0.8184
+Training time: 12.89 seconds
+
+FOLD 5/5
+Candidate accuracy: 0.8811
+Precision: 0.4683
+Recall: 0.8647
+F1: 0.6076
+Log loss: 0.3065
+Top-1 accuracy (all observations): 0.6017
+Candidate coverage: 0.7859
+Training time: 13.62 seconds
+
+================================
+OVERALL OUT-OF-FOLD RESULTS
+================================
+candidate_accuracy: 0.8758
+candidate_precision: 0.4835
+candidate_recall: 0.8852
+candidate_f1: 0.6254
+candidate_log_loss: 0.2983
+top1_accuracy_all_observations: 0.6078
+candidate_coverage: 0.7698
+conditional_top1_accuracy: 0.7896
+total_observations: 208417
+observations_with_positive: 160446
+observations_without_positive: 47971
+
+Training final XGBoost model on all training trips...
+
+================================
+XGBOOST TRAINING COMPLETE
+================================
+Saved model: .\xgb_results\xgboost_road_matching_model.json
+Results directory: .\xgb_results

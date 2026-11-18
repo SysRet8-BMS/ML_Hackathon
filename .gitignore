@@ -24,16 +24,18 @@ Datasets/
 datasets/
 data/
 colab_results-*.zip
-colab_results/features/*.csv
-!colab_results/features/*.csv.gz
-colab_results/knn/*.joblib
-!colab_results/knn/*.joblib.gz
+results/colab_results/features/*.csv
+!results/colab_results/features/*.csv.gz
+results/colab_results/knn/*.joblib
+!results/colab_results/knn/*.joblib.gz
 artifacts/
 *.joblib
 *.pkl
 *.pt
 *.pth
 Student folder
+train_candidates.csv
+student_test_candidates.csv
 # Local environment and editor files
 .env
 .env.*

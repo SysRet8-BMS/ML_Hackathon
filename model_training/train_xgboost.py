@@ -189,7 +189,7 @@ def main():
 
     parser.add_argument(
         "--out",
-        default="xgb_results",
+        default="results/xgboost",
         help="Output directory"
     )
 

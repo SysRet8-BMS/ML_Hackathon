@@ -18,7 +18,7 @@ student-test CSV. Do not pass evaluator trips or evaluator labels to this
 command.
 
 ```sh
-python models/logistic_regression.py \
+python model_training/logistic_regression.py \
   --train train_candidates.csv \
   --student-test student_test_candidates.csv \
   --out results/logistic_regression

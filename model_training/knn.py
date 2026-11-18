@@ -17,7 +17,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 try:
-    from models.mlp import DEFAULT_FEATURES, ID_COLUMNS, LABEL_COLUMN, group_folds, load_csv, load_raw, scores
+    from model_training.mlp import DEFAULT_FEATURES, ID_COLUMNS, LABEL_COLUMN, group_folds, load_csv, load_raw, scores
 except ModuleNotFoundError:  # Colab flat-upload fallback.
     from mlp import DEFAULT_FEATURES, ID_COLUMNS, LABEL_COLUMN, group_folds, load_csv, load_raw, scores
 

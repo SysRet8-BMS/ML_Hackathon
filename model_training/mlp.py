@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 try:
-    from data_processing.candidate_features import load_partition
+    from feature_engineering.candidate_features import load_partition
 except ModuleNotFoundError:  # Colab can upload the three modules flat at its root.
     from candidate_features import load_partition
 

@@ -14,8 +14,8 @@ import joblib
 import numpy as np
 from sklearn.metrics import f1_score
 
-from data_processing.candidate_features import SegmentGrid, point_segment, project_many, read_numeric
-from data_processing.inference_candidates import INFERENCE_FEATURES, InferenceTrip, build_inference_candidates
+from feature_engineering.candidate_features import SegmentGrid, point_segment, project_many, read_numeric
+from feature_engineering.inference_candidates import INFERENCE_FEATURES, InferenceTrip, build_inference_candidates
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -29,7 +29,7 @@ def evaluator_root() -> Path:
 
 
 def model_path() -> Path:
-    default = ROOT / "colab_results" / "knn" / "knn_pipeline.joblib.gz"
+    default = ROOT / "results" / "colab_results" / "knn" / "knn_pipeline.joblib.gz"
     return Path(os.getenv("PATHSNAP_MODEL_PATH", str(default))).expanduser().resolve()
 
 

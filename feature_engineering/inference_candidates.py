@@ -6,7 +6,7 @@ from pathlib import Path
 
 import numpy as np
 
-from data_processing.candidate_features import SegmentGrid, bearing, project_many, read_numeric
+from feature_engineering.candidate_features import SegmentGrid, bearing, project_many, read_numeric
 
 INFERENCE_FEATURES = (
     "distance_m",

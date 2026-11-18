@@ -28,7 +28,7 @@ trips here.
 ## Run
 
 ```sh
-python models/mlp.py \
+python model_training/mlp.py \
   --train-root datasets/train \
   --student-root datasets/student_test \
   --out results/mlp
@@ -59,7 +59,7 @@ Member 1's additional KNN implementation uses the same raw-data candidate
 pipeline and evaluation contract:
 
 ```sh
-python models/knn.py \
+python model_training/knn.py \
   --train-root datasets/train \
   --student-root datasets/student_test \
   --out results/knn

@@ -54,7 +54,7 @@ The winning neighbour count is the upper search boundary (45), so a larger searc
 
 ## Reproduction and evidence
 
-Run `.venv/bin/python models/tune_knn.py --trials 10 --out results/knn_tuning_new`, then `.venv/bin/python models/summarize_knn_tuning.py --out results/knn_tuning_new`. Existing study directories are protected against overwrite.
+Run `.venv/bin/python hyperparameter_optimisation/tune_knn.py --trials 10 --out results/knn_tuning_new`, then `.venv/bin/python hyperparameter_optimisation/summarize_knn_tuning.py --out results/knn_tuning_new`. Existing study directories are protected against overwrite.
 
 `study.sqlite3` retains the full search, `trials.csv` stores trial parameters/status/duration, `folds.json` stores trip assignments, `comparison.json` stores measured results, input SHA256 hashes and versions, and `knn_tuned.joblib.gz` stores the fitted scaler and classifier. SVG charts and baseline_vs_tuned.csv are generated from those saved results.
 
