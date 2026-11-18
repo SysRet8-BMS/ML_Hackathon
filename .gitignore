@@ -23,8 +23,11 @@ build/
 Datasets/
 datasets/
 data/
-colab_results/
 colab_results-*.zip
+colab_results/features/*.csv
+!colab_results/features/*.csv.gz
+colab_results/knn/*.joblib
+!colab_results/knn/*.joblib.gz
 artifacts/
 *.joblib
 *.pkl
