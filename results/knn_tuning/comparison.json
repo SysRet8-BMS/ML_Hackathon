@@ -1,0 +1,71 @@
+{
+  "baseline": {
+    "config": {
+      "n_neighbors": 15,
+      "weights": "distance",
+      "p": 2
+    },
+    "cv_macro_f1": 0.8086252696227175,
+    "student_test": {
+      "candidate_accuracy": 0.9220619564304422,
+      "candidate_macro_f1": 0.8070997737199169,
+      "candidate_precision": 0.6280035787321063,
+      "candidate_recall": 0.691409273200591,
+      "log_loss": 0.4822677902008473,
+      "confusion_matrix_tn_fp_fn_tp": [
+        110929,
+        5821,
+        4386,
+        9827
+      ],
+      "observations": 19160,
+      "observations_with_reference_candidate": 14213,
+      "candidate_miss_rate": 0.2581941544885178,
+      "observation_top1_accuracy": 0.5960855949895616,
+      "observation_top1_accuracy_when_reference_candidate_present": 0.8035601210159713
+    },
+    "fit_seconds": 0.9037471659830771,
+    "inference_seconds": 2.126683666021563
+  },
+  "tuned": {
+    "config": {
+      "n_neighbors": 45,
+      "weights": "uniform",
+      "p": 1
+    },
+    "cv_macro_f1": 0.816511383927487,
+    "student_test": {
+      "candidate_accuracy": 0.9236349197865046,
+      "candidate_macro_f1": 0.8126198830267346,
+      "candidate_precision": 0.6320707387432585,
+      "candidate_recall": 0.7091395201576022,
+      "log_loss": 0.281531248802643,
+      "confusion_matrix_tn_fp_fn_tp": [
+        110883,
+        5867,
+        4134,
+        10079
+      ],
+      "observations": 19160,
+      "observations_with_reference_candidate": 14213,
+      "candidate_miss_rate": 0.2581941544885178,
+      "observation_top1_accuracy": 0.6026617954070981,
+      "observation_top1_accuracy_when_reference_candidate_present": 0.8124252444944768
+    },
+    "fit_seconds": 0.8259762079687789,
+    "inference_seconds": 5.3305078750126995
+  },
+  "search_seconds": 476.0306989590172,
+  "trials": 10,
+  "seed": 17,
+  "selection_status": "provisional pending five-model comparison",
+  "versions": {
+    "python": "3.14.7",
+    "sklearn": "1.9.1",
+    "optuna": "5.1.0"
+  },
+  "inputs": {
+    "train_candidates.csv": "9aa7e3593eaeebd230efdd7a17cac4e97e387877f535bc5cd1edd6b96b83b629",
+    "student_test_candidates.csv": "24dbc11c0a5fd0ea7d0929818d88e1181d2f8bc7d5f844af876258390b01cd47"
+  }
+}

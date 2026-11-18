@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="295" viewBox="0 0 900 295">
+<rect width="100%" height="100%" fill="white"/>
+<text x="24" y="32" font-size="22" font-family="sans-serif">Probability loss and inference cost</text>
+<text x="250" y="64" fill="#2563eb" font-size="16" font-family="sans-serif">Baseline</text>
+<text x="480" y="64" fill="#059669" font-size="16" font-family="sans-serif">Tuned</text>
+<text x="24" y="118" font-size="16" font-family="sans-serif">Log loss</text>
+<rect x="250" y="100" width="41.12" height="22" fill="#2563eb"/>
+<text x="301.12" y="117" font-size="15" font-family="sans-serif">0.4823</text>
+<rect x="250" y="129" width="24.01" height="22" fill="#059669"/>
+<text x="284.01" y="146" font-size="15" font-family="sans-serif">0.2815</text>
+<text x="24" y="208" font-size="16" font-family="sans-serif">Inference seconds</text>
+<rect x="250" y="190" width="181.35" height="22" fill="#2563eb"/>
+<text x="441.35" y="207" font-size="15" font-family="sans-serif">2.1267</text>
+<rect x="250" y="219" width="454.55" height="22" fill="#059669"/>
+<text x="714.55" y="236" font-size="15" font-family="sans-serif">5.3305</text>
+</svg>
