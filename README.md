@@ -1,87 +1,183 @@
-# PathSnap
+# PathSnap — Intelligent Road Matching Using Machine Learning
 
-PathSnap maps noisy GPS observations to road segments and reconstructs a connected route. The repository contains the candidate feature pipeline, model experiments, a FastAPI prediction service, and a Streamlit evaluator page.
+## 1. Project Overview
 
-## Repository layout
+PathSnap is a machine-learning-based road matching system that maps GPS trajectory observations to the most likely road segments in a road network.
 
-The tree is organised by the required submission components:
+The project explores supervised classification and sequence-based inference to improve road-segment identification, trajectory consistency and route reconstruction.
 
-| Component | Location |
+The system is designed around a shared candidate-generation and feature-engineering pipeline, multiple machine-learning classifiers, and a planned Hidden Markov Model (HMM) with Viterbi decoding for sequential route reconstruction.
+
+## 2. Project Objectives
+
+- Match GPS observations to the most likely road-network arcs.
+- Generate candidate road segments using spatial proximity.
+- Engineer spatial, directional and movement-related features.
+- Compare multiple machine-learning classification approaches.
+- Evaluate generalisation using trip-grouped cross-validation.
+- Evaluate development performance on the 10 student-testing trips.
+- Improve route continuity through sequence-based inference.
+- Provide route visualisation and support eventual API/UI integration.
+
+## 3. System Architecture
+
+The intended processing pipeline is:
+
+1. **Input data:** GPS trajectories and road-network geometry.
+2. **Candidate generation:** Identify nearby road-segment candidates for each GPS observation.
+3. **Feature engineering:** Calculate distances, heading similarity, GPS speed and candidate rank.
+4. **Classification:** Predict the probability that each candidate is the correct road segment.
+5. **Sequence inference:** Use HMM/Viterbi decoding to obtain a temporally consistent road sequence.
+6. **Evaluation:** Compare candidate classification and reconstructed routes using appropriate metrics.
+7. **Visualisation:** Display GPS trajectories, road networks and predicted routes.
+
+## 4. Machine Learning Models
+
+The repository includes the following model implementations:
+
+| Model | Implementation |
 |---|---|
-| Data processing (read, inspect, clean, preprocess) | `data_processing/` |
-| Feature engineering (candidate generation, feature extraction) | `feature_engineering/` |
-| Model training (one script per model family) | `model_training/` |
-| Model evaluation (comparison, metrics, plots, confusion matrices) | `model_evaluation/` |
-| Hyperparameter optimisation (Bayesian search, trials, reports) | `hyperparameter_optimisation/` |
-| HMM and Viterbi (route reconstruction and decoding) | `hmm_viterbi/` |
-| API (backend endpoints, model loading) | `api/` |
-| UI (evaluator interface) | `ui/` |
-| Deployment (dependencies, configuration, run instructions) | `deployment/` |
-| Visualisations (Folium and plotting scripts) | `visualisations/` |
-| Supporting results (CSV, logs, configs, result summaries) | `results/` |
-| Assignment guidelines | `docs/` |
+| Multi-Layer Perceptron (MLP) | `models/mlp.py` |
+| K-Nearest Neighbours (KNN) | `models/knn.py` |
+| XGBoost | `models/train_xgboost.py` |
+| Random Forest | `models/RF.py` |
+| Logistic Regression | `models/logistic_regression.py` |
 
+The models use candidate-level features and are intended to follow a common trip-grouped validation and evaluation protocol.
 
-## Development data and model
+## 5. Feature Engineering
 
-Keep the 80 training trips and 10 student-testing trips separate from the evaluator partition. Evaluator trips and their `.route` files must stay on the backend laptop. The API predicts from `.track`, `.nodes`, and `.arcs`; it reads `.route` only after the prediction has been produced, for server-side aggregate scoring. The UI receives no reference route or point labels.
+The compact shared feature set includes:
 
-The current backend default model is the saved KNN pipeline in `results/colab_results/knn/knn_pipeline.joblib.gz`. Set `PATHSNAP_MODEL_PATH` to the final tuned model artifact when HPO and model selection are complete. The current API response identifies its decoder as `classifier_only`; connect the HMM teammate's decoder before the final integrated demonstration.
+- `distance_m`: Distance between the GPS observation and candidate road segment.
+- `distance_gap_m`: Distance difference relative to the nearest candidate.
+- `heading_cos`: Cosine similarity between GPS heading and road-segment direction.
+- `gps_speed_mps`: GPS-derived movement speed.
+- `candidate_rank`: Candidate's proximity ranking.
 
-## Laptop 1: API backend
+The feature-generation pipeline is implemented in the candidate-processing modules.
+
+## 6. Validation and Evaluation
+
+The project uses trip-grouped cross-validation to reduce leakage between training and validation trips.
+
+The evaluation framework is intended to report:
+
+- Accuracy
+- Precision
+- Recall
+- Macro F1-score
+- Log loss, where applicable
+- Observation-level Top-1 accuracy
+- Candidate coverage and miss rate
+- Route continuity and sequence-level performance
+- Training and inference time
+
+The 80 training trips are used for model development and grouped validation. The 10 student-testing trips are reserved for development comparison.
+
+Evaluator-testing data must remain isolated from model selection, tuning and development decisions.
+
+## 7. HMM and Viterbi Route Reconstruction
+
+The intended sequence-inference stage uses an HMM:
+
+- Hidden states represent candidate road segments.
+- Emission probabilities are derived from classifier predictions.
+- Transition probabilities represent road-network connectivity and movement plausibility.
+- Viterbi decoding identifies the most likely sequence of road segments.
+
+The decoder must explicitly handle unreachable transitions, same-segment transitions, U-turns, missing candidates and large timestamp gaps.
+
+HMM/Viterbi implementation and evaluation status should be updated here after verification of the corresponding source code and experiment results.
+
+## 8. Repository Structure
+
+```text
+ML_Hackathon/
+│
+├── models/
+│   ├── mlp.py
+│   ├── knn.py
+│   ├── RF.py
+│   ├── logistic_regression.py
+│   └── train_xgboost.py
+│
+├── data_processing/
+│   ├── candidate_features.py
+│   └── eda.py
+│
+├── colab_results/
+│   ├── features/
+│   ├── mlp/
+│   ├── knn/
+│   └── rf_results/
+│
+├── results/
+│   └── logistic_regression/
+│
+├── docs/
+├── visualizations/
+├── requirements.txt
+└── README.md
+```
+
+Additional experiment directories and HMM artifacts may be added as their implementations are verified.
+
+## 9. Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/SysRet8-BMS/ML_Hackathon.git
+cd ML_Hackathon
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate it on Windows:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
 
 Install dependencies:
 
 ```bash
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-Place the local trip folders under `Datasets/evaluator_test/<trip_id>/`, or set `PATHSNAP_DATA_ROOT` and `PATHSNAP_EVALUATOR_DIR` to the local data locations. The API model and dataset folders are ignored by Git where applicable.
+## 10. Experiment Reproducibility
 
-Run the server so it is reachable from the second laptop:
+Each model should retain:
 
-```bash
-uvicorn api.app:app --host 0.0.0.0 --port 8000
-```
+- Training configuration and random seed.
+- Cross-validation fold metrics.
+- Student-test evaluation metrics.
+- Predictions and model artifacts.
+- Feature importance or model-specific diagnostics.
+- Training and inference timing.
 
-Available endpoints:
+All published metrics must be generated from actual experiment runs. Dataset files, evaluator labels, credentials and oversized intermediate files must not be committed inadvertently.
 
-- `GET /health` reports whether the configured model artifact exists.
-- `GET /trips` lists evaluator trip IDs found in the configured evaluator folder.
-- `POST /predict/{trip_id}` generates candidates without reading `.route`, predicts candidate arcs, then computes aggregate scores against the server-side reference route.
+## 11. Project Deliverables
 
-Useful environment overrides:
+The intended final deliverables include:
 
-```text
-PATHSNAP_DATA_ROOT=/absolute/path/to/Datasets
-PATHSNAP_EVALUATOR_DIR=/absolute/path/to/Datasets/evaluator_test
-PATHSNAP_MODEL_PATH=/absolute/path/to/final_model.joblib
-PATHSNAP_CORS_ORIGINS=http://localhost:8501,http://127.0.0.1:8501
-```
+- Exploratory data analysis and feature engineering.
+- Five-model comparative evaluation.
+- Model selection and hyperparameter optimisation.
+- HMM/Viterbi route reconstruction.
+- Route continuity analysis.
+- Folium-based route visualisation.
+- API and user-interface integration.
+- Consolidated technical report.
 
-## Laptop 2: evaluator page
+## 12. Repository
 
-Start Streamlit and point it to Laptop 1's address on the shared network:
+GitHub: https://github.com/SysRet8-BMS/ML_Hackathon
 
-```bash
-PATHSNAP_API_URL=http://<LAPTOP1_IP>:8000 streamlit run ui/app.py
-```
-
-On Windows PowerShell, set the variable before starting Streamlit:
-
-```powershell
-$env:PATHSNAP_API_URL = "http://<LAPTOP1_IP>:8000"
-streamlit run ui/app.py
-```
-
-The page calls the API, displays aggregate metrics, and draws GPS, local road-network, and predicted-route layers in Folium. Configure the API laptop's firewall to allow TCP port 8000 on the local network.
-
-## EDA and report
-
-The dataset audit and partition summary are in `results/eda/` (`DATA_AUDIT.md`,
-`trip_inventory.csv`, `partition_summary.csv`) and are generated by
-`python data_processing/eda.py`. The interactive map script is
-`visualisations/folium_trip_map.py`.
-
-A consolidated final technical report is still outstanding. Do not describe the
-current interim per-model notes as the completed team report.
+**Project:** PathSnap — Intelligent Road Matching Using Machine Learning.
